@@ -3,16 +3,14 @@ import { readFile } from "./utility"
 const processFile = readFile('./assets/style-guide.md')
 
 processFile(function(data) {
-    const result = data.match(/#+?\s(\w+)/g)
+    const lines = data.split('\n')
 
-    const matches = result?.map((it, i) => {
+    const matches = lines.map(it => {
         const match = it.match(/^#{2}\s(\w+)/)
-        
-        if (match) {
-            const [, key] = match
-            this.emit('found', key, i)
 
-            return key
+        if (match) {
+            const [, header] = match
+            return header
         }
     })
 
@@ -27,18 +25,24 @@ processFile(function(data) {
     console.error(err)
 })
 .on('done', results => {
-    const layout = results.shift()
     processFile(parseData)
 
     function parseData(data: string) {
-        const matches = data.match(/-\s(\w+):\s(\w+)/)
+        const lines = data.split('\n')
+        const regex = /-\s([\w\s]+):\s(.+)/
 
-        if (matches) {
-            const [, key, value] = matches
+        const matches = lines.map(line => {
+            const match = line.match(regex)
 
-            console.log([layout, {
-                [key]: value
-            }])
-        }
+            if (match) {
+                const [, key, value] = match
+
+                return {
+                    [key]: value
+                }
+            }
+        })
+
+        console.log(matches.filter(Boolean))
     }
 })
