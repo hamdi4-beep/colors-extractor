@@ -18,6 +18,14 @@ processFile(function(data) {
 
     this.emit('done', matches?.filter(Boolean))
 })
+.on('error', err => {
+    if (err.code === 'ENOENT') {
+        console.log('No such file exists!')
+        return
+    }
+
+    console.error(err)
+})
 .on('done', results => {
     const layout = results.shift()
     processFile(parseData)
