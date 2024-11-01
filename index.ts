@@ -1,20 +1,17 @@
-import { readFile } from "./utility"
+import { convertToHyphenCase, readFile } from "./utility"
 
 const processFile = readFile('./assets/style-guide.md')
 
 processFile(function(data) {
     const lines = data.split('\n')
+    const matches = lines.map(line => /^(?:#{2}|-)/.test(line) && line)
 
-    const matches = lines.map(it => {
-        const match = it.match(/^#{2}\s(\w+)/)
+    if (!matches.length) {
+        console.log('No matches were found!')
+        return
+    }
 
-        if (match) {
-            const [, header] = match
-            return header
-        }
-    })
-
-    this.emit('done', matches?.filter(Boolean))
+    this.emit('done', matches.filter(Boolean))
 })
 .on('error', err => {
     if (err.code === 'ENOENT') {
@@ -24,25 +21,9 @@ processFile(function(data) {
 
     console.error(err)
 })
-.on('done', results => {
-    processFile(parseData)
-
-    function parseData(data: string) {
-        const lines = data.split('\n')
-        const regex = /-\s([\w\s]+):\s(.+)/
-
-        const matches = lines.map(line => {
-            const match = line.match(regex)
-
-            if (match) {
-                const [, key, value] = match
-
-                return {
-                    [key]: value
-                }
-            }
-        })
-
-        console.log(matches.filter(Boolean))
-    }
+.on('done', (results: string[]) => {
+    results.forEach(result => {
+        const match = /-\s([\w\s]+):\s(.+)/.exec(result)
+        console.log((match ? `${convertToHyphenCase(match[1])}: ${match[2]}` : null) || result)
+    })
 })

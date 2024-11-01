@@ -22,3 +22,5 @@ export function readFile(path: string) {
         return emitter
     }
 }
+
+export const convertToHyphenCase = (str: string) => str.split(' ').map(s => s.toLowerCase()).join('-')
