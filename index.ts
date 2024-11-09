@@ -1,37 +1,41 @@
-import { convertToHyphenCase, handleReadFile } from "./utility"
+import { promises as fsPromise } from "fs";
 
-const readFile = handleReadFile('./assets/style-guide.md')
+readFile('./assets/style-guide.md', (data: string) => {
+    const lines = data.split('\n').filter(line => /^(?:#{2}|-)/.test(line))
+    const styles = [] as string[][]
+    
+    lines.forEach(line => {
+        let match
 
-readFile(function(data) {
-    const regex = /^(?:#{2}|-)/
-    const matches = data.split('\n').map(line => regex.test(line) && line)
-
-    if (!matches.length) {
-        console.log('No matches were found!')
-        return
-    }
-
-    this.emit('matched', matches.filter(Boolean))
-})
-.on('error', err => {
-    if (err.code === 'ENOENT') {
-        console.log('No such file exists!')
-        return
-    }
-
-    console.error(err)
-})
-.on('matched', (results: string[]) => {
-    const regex = /-\s([\w\s]+):\s(.+)/
-
-    results.forEach(result => {
-        const match = regex.exec(result)
-        
-        if (match) {
-            const [, key, value] = match
-            console.log(`${convertToHyphenCase(key)}: ${value}`)
+        if (match = line.match(/-\s([\w\s]+):\s(.+)/)) {
+            const [_, key, value] = match
+            styles.push([convertKey(key), value])
+            return
         }
 
-        if (!match) console.log(result)
+        console.log(line)
     })
+
+    console.log(styles.reduce((prev, [key, value]) => {
+        return {
+            ...prev,
+            [key]: value
+        }
+    }, {}))
 })
+
+async function readFile(path: string, cb: Function) {
+    try {
+        const result = await fsPromise.readFile(path, 'utf-8')
+        cb(result)
+    } catch (err: any) {
+        if (err.code === 'ENOENT') {
+            console.log('No such file exists.')
+            return
+        }
+
+        console.error(err)
+    }
+}
+
+const convertKey = (key: string) => key.toLowerCase().split(' ').join('-')
