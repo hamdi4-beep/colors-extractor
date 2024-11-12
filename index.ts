@@ -1,33 +1,11 @@
 import { promises as fsPromise } from "fs";
 
-readFile('./assets/style-guide.md', (data: string) => {
-    const lines = data.split('\n').filter(line => /^(?:#{2}|-)/.test(line))
-    const styles = [] as string[][]
-    
-    lines.forEach(line => {
-        let match
+readFile('./assets/style-guide.md')
 
-        if (match = line.match(/-\s([\w\s]+):\s(.+)/)) {
-            const [_, key, value] = match
-            styles.push([convertKey(key), value])
-            return
-        }
-
-        console.log(line)
-    })
-
-    console.log(styles.reduce((prev, [key, value]) => {
-        return {
-            ...prev,
-            [key]: value
-        }
-    }, {}))
-})
-
-async function readFile(path: string, cb: Function) {
+async function readFile(path: string) {
     try {
         const result = await fsPromise.readFile(path, 'utf-8')
-        cb(result)
+        processData(result)
     } catch (err: any) {
         if (err.code === 'ENOENT') {
             console.log('No such file exists.')
@@ -35,6 +13,28 @@ async function readFile(path: string, cb: Function) {
         }
 
         console.error(err)
+    }
+}
+
+function processData(data: string) {
+    const stylesRegex = /^(?:#{2}|-)/
+    const categoryRegex = /^#{3}\s(.+)$/
+
+    const lines = data.split('\n').filter(line => stylesRegex.test(line))
+    let category: string
+    
+    for (let i = 0; i < lines.length; i++) {
+        if (categoryRegex.test(lines[i])) category = lines[i].match(categoryRegex)![1]
+        if (lines[i].startsWith('-')) extractValues(lines[i])
+    }
+
+    function extractValues(line: string) {
+        const [key, value] = line.split(/:\s?/)
+
+        if (
+            category === 'Primary' ||
+            category === 'Neutral'
+        ) console.log([category, [convertKey(key.replace('-', '')), value]])
     }
 }
 
