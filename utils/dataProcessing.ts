@@ -19,6 +19,11 @@ export function processData(data: string) {
             ) results.push([category, [convertKey(key.replace('-', '')), value]])
         }
     }
+
+    if (!results.length) {
+        console.log('None of the targeted categories were found.')
+        return
+    }
     
     results = results.filter(Boolean)
 
