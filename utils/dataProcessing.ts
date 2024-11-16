@@ -5,7 +5,7 @@ let category: string
 
 export function processData(data: string) {
     const lines = data.split('\n').filter(line => stylesRegex.test(line))
-    let results = []
+    let results = [] as any[]
     
     for (const line of lines) {
         if (categoryRegex.test(line)) category = line.match(categoryRegex)![1].toLowerCase()
@@ -16,7 +16,9 @@ export function processData(data: string) {
             if (
                 category === 'primary' ||
                 category === 'neutral'
-            ) results.push([category, [convertKey(key.replace('-', '')), value]])
+            ) return results.push([category, [convertKey(key.replace('-', '')), value]])
+
+            console.log('Could not find "primary", or "neutral" categories.')
         }
     }
     
