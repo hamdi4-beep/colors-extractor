@@ -4,8 +4,7 @@ const categoryRegex = /^#{3}\s(.+)$/
 let category: string
 
 export function getColors(data: string) {
-    const lines = data.split('\n').filter(line => stylesRegex.test(line))
-    const values = extractValues(lines)
+    const values = extractValues(data.split('\n').filter(line => stylesRegex.test(line)))
 
     if (!values.length) {
         console.log('None of the targeted categories were found.')
@@ -43,20 +42,21 @@ const convertArrToObject = (arr: (string | string[])[][]) => arr.reduce((prev: O
 }, {})
 
 function extractValues(lines: string[]) {
-    const results = []
+    const results = [] as [string, string[]][]
 
     for (const line of lines) {
         if (categoryRegex.test(line)) category = line.match(categoryRegex)![1].toLowerCase()
+        if (line.startsWith('-')) addValue(line)
+    }
 
-        if (line.startsWith('-')) {
-            const [key, value] = line.split(/:\s?/)
+    return results.filter(Boolean)
+
+    function addValue(line: string) {
+        const [key, value] = line.split(/:\s?/)
 
             if (
                 category === 'primary' ||
                 category === 'neutral'
             ) results.push([category, [convertKey(key.replace('-', '')), value]])
-        }
     }
-
-    return results.filter(Boolean)
 }

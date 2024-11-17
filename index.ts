@@ -1,5 +1,5 @@
 import { promises as fsPromise } from "fs";
-import { getColors } from "./utils/dataProcessing"; 
+import { getColors } from "./utils/utility"; 
 
 readFile('./assets/style-guide.md', console.log)
 
