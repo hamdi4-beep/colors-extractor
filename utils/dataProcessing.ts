@@ -16,9 +16,7 @@ export function processData(data: string) {
             if (
                 category === 'primary' ||
                 category === 'neutral'
-            ) return results.push([category, [convertKey(key.replace('-', '')), value]])
-
-            console.log('Could not find "primary", or "neutral" categories.')
+            ) results.push([category, [convertKey(key.replace('-', '')), value]])
         }
     }
 
@@ -29,18 +27,18 @@ export function processData(data: string) {
     
     results = results.filter(Boolean)
 
-    const colors = results.reduce((prev, curr) => {
+    const colors = results.reduce((prev: Object, curr) => {
         const [key, [prop, value]] = curr as [string, string[]]
     
         if (!isObjectEmpty(prev)) {
-            const rest = (prev as {
+            const colors = (prev as {
                 [x: string]: Object
             })[key]
-    
+
             return {
                 ...prev,
                 [key]: {
-                    ...rest,
+                    ...colors,
                     [prop]: value
                 }
             }
