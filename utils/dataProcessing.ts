@@ -5,29 +5,42 @@ let category: string
 
 export function processData(data: string) {
     const lines = data.split('\n').filter(line => stylesRegex.test(line))
-    let results = [] as any[]
-    
-    for (const line of lines) {
-        if (categoryRegex.test(line)) category = line.match(categoryRegex)![1].toLowerCase()
+    const values = extractValues()
 
-        if (line.startsWith('-')) {
-            const [key, value] = line.split(/:\s?/)
-
-            if (
-                category === 'primary' ||
-                category === 'neutral'
-            ) results.push([category, [convertKey(key.replace('-', '')), value]])
-        }
-    }
-
-    if (!results.length) {
+    if (!values.length) {
         console.log('None of the targeted categories were found.')
         return
     }
-    
-    results = results.filter(Boolean)
 
-    const colors = results.reduce((prev: Object, curr) => {
+    function extractValues() {
+        const results = []
+
+        for (const line of lines) {
+            if (categoryRegex.test(line)) category = line.match(categoryRegex)![1].toLowerCase()
+    
+            if (line.startsWith('-')) {
+                const [key, value] = line.split(/:\s?/)
+    
+                if (
+                    category === 'primary' ||
+                    category === 'neutral'
+                ) results.push([category, [convertKey(key.replace('-', '')), value]])
+            }
+        }
+
+        return results.filter(Boolean)
+    }
+
+    return {
+        colors: convertArrToObject(values)
+    }
+}
+
+const convertKey = (key: string) => key.toLowerCase().split(' ').join('-')
+const isObjectEmpty = (obj: Object) => Object.keys(obj).length === 0
+
+const convertArrToObject = (arr: (string | string[])[][]) => {
+    return arr.reduce((prev: Object, curr) => {
         const [key, [prop, value]] = curr as [string, string[]]
     
         if (!isObjectEmpty(prev)) {
@@ -50,11 +63,4 @@ export function processData(data: string) {
             }
         }
     }, {})
-
-    console.log({
-        colors
-    })
 }
-
-const convertKey = (key: string) => key.toLowerCase().split(' ').join('-')
-const isObjectEmpty = (obj: Object) => Object.keys(obj).length === 0
