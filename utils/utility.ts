@@ -3,7 +3,7 @@ const categoryRegex = /^#{3}\s(.+)$/
 
 let category: string
 
-export function getColors(data: string) {
+export function extractColors(data: string) {
     const values = extractValues(data.split('\n').filter(line => stylesRegex.test(line)))
 
     if (!values.length) {
@@ -20,23 +20,23 @@ const convertKey = (key: string) => key.toLowerCase().split(' ').join('-')
 const isObjectEmpty = (obj: Object) => Object.keys(obj).length === 0
 
 const convertArrToObject = (arr: (string | string[])[][]) => arr.reduce((prev: Object, curr) => {
-    const [key, [prop, value]] = curr as [string, string[]]
+    const [category, [key, value]] = curr as [string, string[]]
 
     if (isObjectEmpty(prev)) return {
-        [key]: {
-            [prop]: value
+        [category]: {
+            [key]: value
         }
     }
 
     const colors = (prev as {
         [x: string]: Object
-    })[key]
+    })[category]
 
     return {
         ...prev,
-        [key]: {
+        [category]: {
             ...colors,
-            [prop]: value
+            [key]: value
         }
     }
 }, {})
