@@ -16,7 +16,7 @@ export function extractColors(data: string) {
     }
 }
 
-const convertKey = (key: string) => key.toLowerCase().split(' ').join('-')
+const convertToKebabCase = (key: string) => key.toLowerCase().split(' ').join('-')
 const isObjectEmpty = (obj: Object) => Object.keys(obj).length === 0
 
 const convertArrToObject = (arr: (string | string[])[][]) => arr.reduce((prev: Object, curr) => {
@@ -57,6 +57,6 @@ function extractValues(lines: string[]) {
             if (
                 category === 'primary' ||
                 category === 'neutral'
-            ) results.push([category, [convertKey(key.replace('-', '')), value]])
+            ) results.push([category, [convertToKebabCase(key.replace('-', '')), value]])
     }
 }
