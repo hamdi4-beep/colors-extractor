@@ -2,7 +2,7 @@
 
 ## Overview
 
-A personal tool I developed to extract color values from MD files. So far, it only works when the color information are structured in a specific format like the ones from Frontend Mentor projects. Make sure to see the file called **styles-guide.md** in the assets folder.
+A personal tool I developed to extract color values from MD files. So far, it only works when the color information are structured in a specific format like the ones from Frontend Mentor projects. Make sure to see [Style Guide file](assets/style-guide.md)
 
 ## Installation
 
