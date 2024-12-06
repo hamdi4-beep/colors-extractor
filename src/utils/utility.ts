@@ -24,7 +24,7 @@ const convertArrToObject = (arr: (string | string[])[][]) => arr.reduce((prev: O
 
     if (isObjectEmpty(prev)) return {
         [category]: {
-            [key + '']: value
+            [key]: value
         }
     }
 
