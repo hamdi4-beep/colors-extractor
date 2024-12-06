@@ -1,5 +1,10 @@
-I'm learning about Node.js' ecosystem! So I created a repo where I can host the code and experiment with different functions to develop a deeper understanding of the technical concepts.
+# Colors Extractor
 
-Please feel free to check out the code and see what I've learned so far.
+## Overview
 
-I'm applying everything I learn about Node.js in this repo to cement my skills and improve.
+A personal tool I developed to extract color values from MD files. So far, it only works when the color information are structured in a specific format like the ones from Frontend Mentor projects. Make sure to see the file called "style-guide" in the assets folder.
+
+## Installation
+
+1. Install TypeScript, if you haven't already.
+2. Run the following command inside the folder: ```npm run start```
