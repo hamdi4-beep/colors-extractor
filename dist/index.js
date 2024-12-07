@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const utility_1 = require("./utils/utility");
 readFile('./assets/style-guide.md').then(result => {
-    const fsPromise = fs_1.promises.writeFile('colors.txt', JSON.stringify(result, null, '\t'));
+    const fsPromise = fs_1.promises.writeFile('colors.json', JSON.stringify(result, null, '\t'));
     fsPromise.then(() => console.log('Created a textfile with the color values in the root folder.'));
 });
 function readFile(path) {

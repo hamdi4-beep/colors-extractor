@@ -2,8 +2,8 @@ import { promises as fsPromises } from "fs";
 import { extractColors } from "./utils/utility";
 
 readFile('./assets/style-guide.md').then(result => {
-    const fsPromise = fsPromises.writeFile('colors.txt', JSON.stringify(result, null, '\t'))
-    fsPromise.then(() => console.log('Created a textfile with the color values in the root folder.'))
+    const fsPromise = fsPromises.writeFile('colors.json', JSON.stringify(result, null, '\t'))
+    fsPromise.then(() => console.log('Created a json file that contains the color values in the root folder.'))
 })
 
 async function readFile(path: string) {
