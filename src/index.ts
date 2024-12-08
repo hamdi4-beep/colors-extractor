@@ -1,15 +1,16 @@
-import { promises as fsPromises } from "fs";
+import { existsSync, promises as fsPromises, mkdirSync } from "fs";
 import { extractColors } from "./utils/utility";
 
-readFile('./assets/style-guide.md').then(result => {
-    const fsPromise = fsPromises.writeFile('colors.json', JSON.stringify(result, null, '\t'))
-    fsPromise.then(() => console.log('Created a json file that contains the color values in the root folder.'))
+readFile('./style-guide.md', (result: unknown) => {
+    if (!existsSync('data')) mkdirSync('data')
+    fsPromises.writeFile('data/colors.json', JSON.stringify(result, null, '\t'))
+    console.log('Created a colors json file inside data folder.')
 })
 
-async function readFile(path: string) {
+async function readFile(path: string, cb: Function) {
     try {
         const result = extractColors(await fsPromises.readFile(path, 'utf-8'))
-        return result
+        cb(result)
     } catch (err: any) {
         handleError(err)
     }

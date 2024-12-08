@@ -44,10 +44,10 @@ const convertArrToObject = (arr: (string | string[])[][]) => arr.reduce((prev: O
 function extractValues(lines: string[]) {
     const results = [] as [string, string[]][]
 
-    for (const line of lines) {
+    lines.forEach(line => {
         if (categoryRegex.test(line)) category = line.match(categoryRegex)![1].toLowerCase()
         if (line.startsWith('-')) addValue(line)
-    }
+    })
 
     return results.filter(Boolean)
 

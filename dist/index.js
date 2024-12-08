@@ -11,15 +11,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const utility_1 = require("./utils/utility");
-readFile('./assets/style-guide.md').then(result => {
-    const fsPromise = fs_1.promises.writeFile('colors.json', JSON.stringify(result, null, '\t'));
-    fsPromise.then(() => console.log('Created a textfile with the color values in the root folder.'));
+readFile('./style-guide.md', (result) => {
+    if (!(0, fs_1.existsSync)('data'))
+        (0, fs_1.mkdirSync)('data');
+    fs_1.promises.writeFile('data/colors.json', JSON.stringify(result, null, '\t'));
+    console.log('Created a colors json file inside data folder.');
 });
-function readFile(path) {
+function readFile(path, cb) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const result = (0, utility_1.extractColors)(yield fs_1.promises.readFile(path, 'utf-8'));
-            return result;
+            cb(result);
         }
         catch (err) {
             handleError(err);
