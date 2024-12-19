@@ -1,26 +1,34 @@
-import { existsSync, promises as fsPromises, mkdirSync } from "fs";
-import { extractColors } from "./utils/utility";
+import { createReadStream, createWriteStream } from 'fs'
+import { join } from 'path'
+import { pipeline, Transform } from 'stream'
 
-readFile('./style-guide.md', (result: unknown) => {
-    if (!existsSync('data')) mkdirSync('data')
-    fsPromises.writeFile('data/colors.json', JSON.stringify(result, null, '\t'))
-    console.log('Created a colors json file inside data folder.')
-})
+const filterByRegex = (regex: RegExp) => {
+    const results = [] as string[]
 
-async function readFile(path: string, cb: Function) {
-    try {
-        const result = extractColors(await fsPromises.readFile(path, 'utf-8'))
-        cb(result)
-    } catch (err: any) {
-        handleError(err)
-    }
+    return new Transform({
+        objectMode: true,
+        transform(chunk, encoding, callback) {
+            const lines = (chunk + '').split('\n')
+            results.push(...lines.filter(line => regex.test(line)))
+            callback()
+        },
+        flush(callback) {
+            this.push(JSON.stringify(results, null, '\t'))
+            callback()
+        }
+    })
 }
 
-function handleError(err: any) {
-    if (err.code === 'ENOENT') {
-        console.log('No such file exists.')
-        return
-    }
+pipeline(
+    createReadStream(join('files', process.argv[2] ?? '')),
+    filterByRegex(/-\s(?:[\S\s]+):/),
+    createWriteStream(join('files', 'results.txt')),
+    (err: any) => {
+        if (err) {
+            console.error(err)
+            process.exit(1)
+        }
 
-    console.error('Error Log:', err)
-}
+        console.log('Created a text file called "results" inside the files directory.')
+    }
+)
