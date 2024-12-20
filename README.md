@@ -8,7 +8,8 @@ A personal tool I developed to extract color values from MD files. So far, it on
 
 1. Clone the repo by running the following command: ```git clone https://github.com/hamdi4-beep/colors-extractor.git```
 2. Install the dependencies by running the following command: ```npm i```
-3. Run the following command inside the folder: ```npm run start```
+3. Paste your markdown file in the files directory.
+4. Run the following command inside the folder: ```npm run start```
 
 ## Note
 

@@ -1,34 +1,38 @@
 import { createReadStream, createWriteStream } from 'fs'
-import { join } from 'path'
+import { basename, join } from 'path'
 import { pipeline, Transform } from 'stream'
 
-const filterByRegex = (regex: RegExp) => {
-    const results = [] as string[]
+const getFileExtension = (filename: string) => filename.split('.').pop()?.toLowerCase()
+const filename = basename(process.argv[2] ?? '')
 
-    return new Transform({
-        objectMode: true,
-        transform(chunk, encoding, callback) {
-            const lines = (chunk + '').split('\n')
-            results.push(...lines.filter(line => regex.test(line)))
-            callback()
-        },
-        flush(callback) {
-            this.push(JSON.stringify(results, null, '\t'))
-            callback()
-        }
-    })
+if (!filename) {
+    console.error('Expected a filename argument.')
+    process.exit(1)
 }
 
+if (getFileExtension(filename) !== 'md') {
+    console.log('Only markdown files are accepted.')
+    process.exit(1)
+}
+
+const filterByRegex = (regex: RegExp) => new Transform({
+    objectMode: true,
+    transform(chunk, encoding = 'utf8', callback) {
+        const lines = (chunk + '').split('\n')
+        callback(null, lines.filter(line => regex.test(line)).join('\n'))
+    }
+})
+
 pipeline(
-    createReadStream(join('files', process.argv[2] ?? '')),
+    createReadStream(join('files', filename)),
     filterByRegex(/-\s(?:[\S\s]+):/),
-    createWriteStream(join('files', 'results.txt')),
+    process.stdout,
     (err: any) => {
         if (err) {
             console.error(err)
             process.exit(1)
         }
 
-        console.log('Created a text file called "results" inside the files directory.')
+        console.log('The operation was a success.')
     }
 )
