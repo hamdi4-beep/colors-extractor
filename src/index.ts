@@ -26,7 +26,7 @@ const filterByRegex = (regex: RegExp) => new Transform({
 pipeline(
     createReadStream(join('files', filename)),
     filterByRegex(/-\s(?:[\S\s]+):/),
-    process.stdout,
+    createWriteStream('results.txt'),
     (err: any) => {
         if (err) {
             console.error(err)
