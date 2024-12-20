@@ -33,6 +33,6 @@ pipeline(
             process.exit(1)
         }
 
-        console.log('The operation was a success.')
+        console.log('Created a text file in the root directory.')
     }
 )
