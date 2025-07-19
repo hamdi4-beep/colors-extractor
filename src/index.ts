@@ -2,8 +2,14 @@ import { createReadStream, createWriteStream } from 'fs'
 import { basename, join } from 'path'
 import { pipeline, Transform } from 'stream'
 
-const getFileExtension = (filename: string) => filename.split('.').pop()?.toLowerCase()
+const getFileExtension = (filename: string) =>
+    filename
+        .split('.')
+        .pop()
+        ?.toLowerCase()
+
 const filename = basename(process.argv[2] ?? '')
+const DIR_NAME = 'files'
 
 if (!filename) {
     console.error('Expected a filename argument.')
@@ -15,17 +21,18 @@ if (getFileExtension(filename) !== 'md') {
     process.exit(1)
 }
 
-const filterByRegex = (regex: RegExp) => new Transform({
-    objectMode: true,
-    transform(chunk, encoding = 'utf8', callback) {
-        const lines = (chunk + '').split('\n')
-        callback(null, lines.filter(line => regex.test(line)).join('\n'))
-    }
-})
+const filterByRegex = (regex: RegExp) =>
+    new Transform({
+        objectMode: true,
+        transform(chunk, encoding = 'utf8', callback) {
+            const lines = (chunk + '').split('\n')
+            callback(null, lines.filter(line => regex.test(line)).join('\n'))
+        }
+    })
 
 pipeline(
-    createReadStream(join('files', filename)),
-    filterByRegex(/-\s(?:[\S\s]+):/),
+    createReadStream(join(DIR_NAME, filename)),
+    filterByRegex(/(?:#{2,}|-\s[\S\s]+)/),
     createWriteStream('results.txt'),
     (err: any) => {
         if (err) {
